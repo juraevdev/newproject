@@ -3,8 +3,11 @@ from django.contrib.auth.hashers import make_password
 
 class CustomUserManager(UserManager):
     def _create_user(self, username, phone_number, password, **extra_fields):
-        user = self.model(username=username, **extra_fields)
-        user = self.model(phone_number=phone_number, **extra_fields)
+        if not username:
+            raise ValueError("The username must be set")
+        if not phone_number:
+            raise ValueError("The phone number must be set")
+        user = self.model(username=username, phone_number=phone_number, **extra_fields)
         user.password = make_password(password)
         user.save(using=self._db)
         return user
